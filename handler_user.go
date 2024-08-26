@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/shivajichalise/rssagg/internal/auth"
 	"github.com/shivajichalise/rssagg/internal/database"
 )
 
@@ -41,18 +40,6 @@ func (apiConf *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reque
 }
 
 // handlerCreateUser() is now a method of apiConfig struct
-func (apiConf *apiConfig) handlerGetUserByApiKey(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetApiKey(r.Header)
-	if err != nil {
-		respondWithError(w, 403, fmt.Sprintf("ERROR: Auth error: %v", err))
-		return
-	}
-
-	user, err := apiConf.DB.GetUserByAPIKey(r.Context(), apiKey)
-	if err != nil {
-		respondWithError(w, 404, fmt.Sprintf("ERROR: User not found: %v", err))
-		return
-	}
-
+func (apiConf *apiConfig) handlerGetUserByApiKey(w http.ResponseWriter, r *http.Request, user database.User) {
 	respondWithJson(w, 200, databaseUserToUser(user))
 }
